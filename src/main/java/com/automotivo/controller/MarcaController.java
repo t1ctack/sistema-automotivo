@@ -1,31 +1,29 @@
 package com.automotivo.controller;
 
-import com.automotivo.model.Marca;
-import com.automotivo.service.MarcaService;
+import com.automotivo.model.Modelo;
+import com.automotivo.repository.ModeloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/marcas")
-public class MarcaController {
+@RequestMapping("/modelos")
+@CrossOrigin("*")
+public class ModeloController {
 
     @Autowired
-    private MarcaService service;
+    private ModeloRepository modeloRepository;
 
+    // LISTAR MODELOS (ESSENCIAL PRO FRONT)
     @GetMapping
-    public List<Marca> listar() {
-        return service.listarTodos();
+    public List<Modelo> listar() {
+        return modeloRepository.findAll();
     }
 
+    // CRIAR MODELO
     @PostMapping
-    public Marca salvar(@RequestBody Marca marca) {
-        return service.salvar(marca);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deletar(@PathVariable Long id) {
-        service.deletar(id);
+    public Modelo criar(@RequestBody Modelo modelo) {
+        return modeloRepository.save(modelo);
     }
 }

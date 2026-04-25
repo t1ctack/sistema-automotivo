@@ -31,7 +31,7 @@ form {
     box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
 
-input {
+input, select {
     margin: 5px;
     padding: 8px;
     width: 150px;
@@ -76,8 +76,10 @@ button {
     <input placeholder="Ano" id="ano" type="number" required>
     <input placeholder="Preço" id="preco" type="number" required>
     <input placeholder="KM" id="km" type="number" required>
-    <input placeholder="Status" id="status" required>
-    <input placeholder="ID Modelo" id="modelo" type="number" required>
+    <input placeholder="Status (DISPONIVEL/VENDIDO)" id="status" required>
+
+    <!-- SELECT DE MODELO (NOVO) -->
+    <select id="modelo"></select>
 
     <button class="btn-add">Salvar</button>
 </form>
@@ -93,7 +95,23 @@ button {
 
 const url = "http://localhost:8080/veiculos";
 
-// LISTAR
+// 🔥 CARREGAR MODELOS AUTOMATICAMENTE
+function carregarModelos() {
+    fetch("http://localhost:8080/modelos")
+    .then(r => r.json())
+    .then(data => {
+        let select = document.getElementById("modelo");
+        select.innerHTML = "";
+
+        data.forEach(m => {
+            select.innerHTML += `<option value="${m.id}">
+                ${m.nome} - ${m.marca.nome}
+            </option>`;
+        });
+    });
+}
+
+// LISTAR VEÍCULOS
 function listar() {
     fetch(url)
     .then(r => r.json())
@@ -181,13 +199,14 @@ function deletar(id) {
     .then(() => listar());
 }
 
-// LIMPAR FORM
+// LIMPAR
 function limpar() {
     document.getElementById("id").value = "";
     document.querySelector("form").reset();
 }
 
-// CARREGA AUTOMATICO
+// INICIAR
+carregarModelos();
 listar();
 
 </script>

@@ -145,9 +145,20 @@ function salvar(e) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(veiculo)
     })
+    .then(res => {
+        if (!res.ok) {
+            throw new Error("Erro ao salvar");
+        }
+        return res.json();
+    })
     .then(() => {
+        alert("Salvo com sucesso!");
         limpar();
         listar();
+    })
+    .catch(err => {
+        alert("Erro: " + err.message);
+        console.log(err);
     });
 }
 
