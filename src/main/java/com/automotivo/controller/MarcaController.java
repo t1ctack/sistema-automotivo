@@ -1,29 +1,29 @@
 package com.automotivo.controller;
 
-import com.automotivo.model.Modelo;
-import com.automotivo.repository.ModeloRepository;
+import com.automotivo.model.Marca;
+import com.automotivo.repository.MarcaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/modelos")
+@RequestMapping("/marcas")
 @CrossOrigin("*")
-public class ModeloController {
+public class MarcaController {
 
     @Autowired
-    private ModeloRepository modeloRepository;
+    private MarcaRepository marcaRepository;
 
-    // LISTAR MODELOS (ESSENCIAL PRO FRONT)
+    // LISTAR TODAS AS MARCAS
     @GetMapping
-    public List<Modelo> listar() {
-        return modeloRepository.findAll();
+    public List<Marca> listar() {
+        return marcaRepository.findAll();
     }
 
-    // CRIAR MODELO
+    // CRIAR NOVA MARCA
     @PostMapping
-    public Modelo criar(@RequestBody Modelo modelo) {
-        return modeloRepository.save(modelo);
+    public Marca criar(@RequestBody Marca marca) {
+        return marcaRepository.save(marca);
     }
 }
