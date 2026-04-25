@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Sistema Automotivo</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #eef2f7;
+    margin: 0;
+}
+
+header {
+    background: #0d47a1;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.container {
+    padding: 20px;
+}
+
+form {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+input {
+    margin: 5px;
+    padding: 8px;
+    width: 150px;
+}
+
+button {
+    padding: 8px 12px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.btn-add { background: #2e7d32; color: white; }
+.btn-edit { background: #f9a825; }
+.btn-del { background: #c62828; color: white; }
+
+.card {
+    background: white;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+    <h1>🚗 Sistema de Veículos</h1>
+</header>
+
+<div class="container">
+
+```
+<form onsubmit="salvar(event)">
+    <input type="hidden" id="id">
+
+    <input placeholder="Cor" id="cor" required>
+    <input placeholder="Ano" id="ano" type="number" required>
+    <input placeholder="Preço" id="preco" type="number" required>
+    <input placeholder="KM" id="km" type="number" required>
+    <input placeholder="Status" id="status" required>
+    <input placeholder="ID Modelo" id="modelo" type="number" required>
+
+    <button class="btn-add">Salvar</button>
+</form>
+
+<button onclick="listar()">🔄 Atualizar Lista</button>
+
+<div id="lista"></div>
+```
+
+</div>
+
+<script>
+
+const url = "http://localhost:8080/veiculos";
+
+// LISTAR
+function listar() {
+    fetch(url)
+    .then(r => r.json())
+    .then(data => {
+        let html = "";
+        data.forEach(v => {
+            html += `
+            <div class="card">
+                <b>${v.modelo.nome}</b> (${v.modelo.marca.nome})<br>
+                ${v.cor} - ${v.ano} - R$ ${v.preco}<br>
+                Status: ${v.status}<br><br>
+
+                <button class="btn-edit" onclick="editar(${v.id}, '${v.cor}', ${v.ano}, ${v.preco}, ${v.quilometragem}, '${v.status}', ${v.modelo.id})">Editar</button>
+                <button class="btn-del" onclick="deletar(${v.id})">Deletar</button>
+            </div>
+            `;
+        });
+        document.getElementById("lista").innerHTML = html;
+    });
+}
+
+// SALVAR (CREATE + UPDATE)
+function salvar(e) {
+    e.preventDefault();
+
+    const id = document.getElementById("id").value;
+
+    const veiculo = {
+        cor: document.getElementById("cor").value,
+        ano: parseInt(document.getElementById("ano").value),
+        preco: parseFloat(document.getElementById("preco").value),
+        quilometragem: parseFloat(document.getElementById("km").value),
+        status: document.getElementById("status").value,
+        modelo: {
+            id: parseInt(document.getElementById("modelo").value)
+        }
+    };
+
+    let metodo = "POST";
+    let endpoint = url;
+
+    if (id) {
+        metodo = "PUT";
+        endpoint = url + "/" + id;
+    }
+
+    fetch(endpoint, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(veiculo)
+    })
+    .then(() => {
+        limpar();
+        listar();
+    });
+}
+
+// EDITAR
+function editar(id, cor, ano, preco, km, status, modelo) {
+    document.getElementById("id").value = id;
+    document.getElementById("cor").value = cor;
+    document.getElementById("ano").value = ano;
+    document.getElementById("preco").value = preco;
+    document.getElementById("km").value = km;
+    document.getElementById("status").value = status;
+    document.getElementById("modelo").value = modelo;
+}
+
+// DELETAR
+function deletar(id) {
+    fetch(url + "/" + id, {
+        method: "DELETE"
+    })
+    .then(() => listar());
+}
+
+// LIMPAR FORM
+function limpar() {
+    document.getElementById("id").value = "";
+    document.querySelector("form").reset();
+}
+
+// CARREGA AUTOMATICO
+listar();
+
+</script>
+
+</body>
+</html>
